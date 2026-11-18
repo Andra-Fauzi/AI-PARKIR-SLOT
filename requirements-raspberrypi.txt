@@ -1,0 +1,57 @@
+# ============================================================
+# requirements-raspberrypi.txt
+# Untuk: predict.py, alpr_camera.py (inference saja, BUKAN untuk export)
+# Target: Raspberry Pi (4/5), CPU-only, TANPA GPU/CUDA
+# ============================================================
+#
+# SYARAT WAJIB:
+#   - Raspberry Pi OS 64-bit (ARM64/aarch64). Wheel PyTorch & onnxruntime
+#     modern TIDAK tersedia untuk OS 32-bit (armhf). Cek dengan:
+#         uname -m   -> harus muncul "aarch64", bukan "armv7l"
+#
+# CATATAN INSTALASI:
+#   Beberapa package (torch, opencv, onnxruntime) build dari source di RPi
+#   bisa SANGAT lama/gagal kalau ambil dari PyPI biasa. Disarankan pakai
+#   piwheels (repo wheel prebuilt khusus ARM Raspberry Pi), biasanya sudah
+#   otomatis terpakai di Raspberry Pi OS. Kalau belum, cek/isi di:
+#       /etc/pip.conf   ->   [global] \n extra-index-url=https://www.piwheels.org/simple
+#
+#   Install dengan:
+#       pip install -r requirements-raspberrypi.txt
+#
+#   Kalau install torch tetap gagal/lambat, alternatif: pakai wheel torch
+#   ARM resmi dari https://download.pytorch.org/whl/cpu (torch versi CPU-only,
+#   tetap perlu, karena ultralytics dependency-nya ke torch walau modelnya NCNN).
+
+# ---- Computer vision & core ----
+opencv-python>=4.9.0        # kalau headless (tanpa desktop/X11 di RPi), pakai opencv-python-headless
+numpy<2.0.0
+pyyaml>=6.0
+
+# ---- PyTorch CPU (dependency wajib ultralytics, walau inference pakai NCNN) ----
+torch>=2.2.0
+torchvision>=0.17.0
+
+# ---- YOLO ----
+ultralytics>=8.4.0
+
+# ---- Inference NCNN (format yang direkomendasikan untuk RPi) ----
+ncnn>=1.0.20240102
+
+# ---- OCR (dipakai predict.py) ----
+rapidocr-onnxruntime>=1.3.0    # sudah include onnxruntime CPU
+
+# ---- Database ----
+mysql-connector-python>=8.3.0
+
+# ---- ALPR (alpr_camera.py) — OPSIONAL ----
+# fast-alpr belum tentu punya wheel ARM resmi untuk semua dependency-nya;
+# test dulu, dan kalau berat/gagal di RPi, pertimbangkan pakai predict.py + NCNN
+# (yang sudah dioptimasi untuk RPi) sebagai gantinya untuk deteksi plat.
+# fast-alpr[onnx]>=0.1.0
+
+# ============================================================
+# TIDAK PERLU di Raspberry Pi (skip, ini cuma buat proses export di PC/laptop):
+#   onnx, onnxsim, onnxruntime-gpu  -> export model dilakukan di Windows/Linux,
+#   hasil foldernya (mis. best_ncnn_model/) baru dipindah/copy ke Raspberry Pi.
+# ============================================================

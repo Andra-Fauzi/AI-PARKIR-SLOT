@@ -1,0 +1,42 @@
+# ============================================================
+# requirements-windows.txt
+# Untuk: predict.py, export_to_lightweight_model.py, alpr_camera.py
+# Target: Windows, dev/testing machine (asumsi ada GPU NVIDIA, mis. RTX 2050)
+# ============================================================
+#
+# CATATAN PENTING soal PyTorch + CUDA:
+#   `pip install -r requirements-windows.txt` SAJA tidak cukup untuk dapat
+#   PyTorch versi CUDA (default pip install torch itu CPU-only).
+#   Install torch DULU secara terpisah dengan index CUDA resmi, baru sisanya:
+#
+#       pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+#       pip install -r requirements-windows.txt
+#
+#   Cek versi CUDA driver kamu dulu (nvidia-smi), sesuaikan cu124/cu121/dst
+#   di https://pytorch.org/get-started/locally/ kalau beda.
+
+# ---- Computer vision & core ----
+opencv-python>=4.9.0
+numpy<2.0.0          # ultralytics & rapidocr sebagian belum full support numpy 2.x
+pyyaml>=6.0
+
+# ---- YOLO ----
+ultralytics>=8.4.0
+
+# ---- OCR (dipakai predict.py) ----
+rapidocr-onnxruntime>=1.3.0
+
+# ---- Export ke format ringan (export_to_lightweight_model.py) ----
+onnx>=1.16.0
+onnxsim>=0.4.36
+onnxruntime-gpu>=1.18.0     # ganti ke onnxruntime (tanpa -gpu) kalau gak ada NVIDIA GPU
+ncnn>=1.0.20240102          # opsional, cuma perlu kalau mau load/test model ncnn di Windows juga
+
+# ---- Database ----
+mysql-connector-python>=8.3.0
+
+# ---- ALPR (alpr_camera.py) ----
+# Pilih SATU baris fast-alpr di bawah sesuai device, comment yang lain:
+fast-alpr[onnx-gpu]>=0.1.0     # kalau pakai GPU NVIDIA (default, sesuai onnxruntime-gpu di atas)
+# fast-alpr[onnx-directml]>=0.1.0  # alternatif GPU non-NVIDIA di Windows (AMD/Intel)
+# fast-alpr[onnx]>=0.1.0           # CPU only

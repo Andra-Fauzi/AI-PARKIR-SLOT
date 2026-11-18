@@ -1,0 +1,1 @@
+python predict.py --camera 0 --model last.pt --class-colors "empty:green,occupied:red" --conf 0.2 --smooth-iou 0.2 --smooth-frame 20 --db-enable --db-name parkir_db --db-mode manual --smooth-min-hits 5 --smooth-alpha 0.3 --contrast-boost --contrast-clip-limit 0.5
